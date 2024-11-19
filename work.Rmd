@@ -51,7 +51,7 @@ quantile(table1$viewers_millions, probs = c(0.25, 0.75))
 
 d. has viewership grown or declined over the 2011–2012 season? Discuss.
 
-还没做
+不会
 
 ## Question #2: NBAPlayerPts. (Attached Data: NBAPlayerPts)
 
@@ -162,13 +162,160 @@ Managerial Report:
 Prepare a managerial report summarizing the results of the survey. In addition to statistical summaries, discuss how the magazine might use these results to attract advertisers. You might also comment on how the survey results could be used by the magazine’s editors to identify topics that would be of interest to readers. Your report should address the following issues, but do not limit your analysis to just these areas.
 
 a. Develop appropriate descriptive statistics to summarize the data.
+```{r}
+# 分数分布直方图
+library(skimr)
+library(kableExtra)
+
+table3 = clean_names(read.csv("./data/Professional.csv")) %>% select(age:have_children)
+
+skimr::skim(table3) %>% kable() %>% kable_styling()
+```
 
 b. Develop 95% confidence intervals for the mean age and household income of subscribers.
+```{r}
+# 计算致信区间
+t.test(table3$age, conf.level = 0.95)$conf.int[1]
+t.test(table3$age, conf.level = 0.95)$conf.int[2]
+
+t.test(table3$household_income, conf.level = 0.95)$conf.int[1]
+t.test(table3$household_income, conf.level = 0.95)$conf.int[2]
+
+```
 
 c. Develop 95% confidence intervals for the proportion of subscribers who have broadband access at home and the proportion of subscribers who have children.
+```{r}
+# 计算致信区间
+
+#总量
+n_broadband = nrow(table3)
+
+#为YES的量
+x_broadband = nrow(table3 %>% filter(broadband_access == 'Yes'))
+
+result_broadband <- prop.test(x_broadband, n_broadband, conf.level = 0.95)
+result_broadband$conf.int[1]
+result_broadband$conf.int[2]
+
+#有孩子的量
+x_children = nrow(table3 %>% filter(have_children == 'Yes'))
+result_children <- prop.test(x_children, n_broadband, conf.level = 0.95)
+result_children$conf.int[1]
+result_children$conf.int[2]
+```
 
 d. Would Young Professional be a good advertising outlet for online brokers? Justify your conclusion with statistical data.
 
+不会
+
 e. Would this magazine be a good place to advertise for companies selling educational software and computer games for young children?
+不会
 
 f. Comment on the types of articles you believe would be of interest to readers of Young Professional.
+不会
+
+## Question #5: Quality Associate, Inc. (Attached Data: Quality)
+
+Quality associates, inc., a consulting firm, advises its clients about sampling and statistical procedures that can be used to control their manufacturing processes. in one particular application, a client gave Quality associates a sample of 800 observations taken during a time in which that client’s process was operating satisfactorily. the sample standard deviation for these data was .21; hence, with so much data, the population standard deviation was assumed to be .21. Quality associates then suggested that random samples of size 30 be taken periodically to monitor the process on an ongoing basis. by analyzing the new samples, the client could quickly learn whether the process was operating satisfactorily. when the process was not operating satisfactorily, corrective action could be taken to eliminate the problem. the design specification indicated the mean for the process should be 12. the hypothesis test suggested by Quality associates follows.
+
+Corrective action will be taken any time is rejected.
+
+Data are available in the data set Quality.
+
+Managerial Report
+
+a. Conduct a hypothesis test for each sample at the .01 level of significance and determine what action, if any, should be taken. Provide the p-value for each test.
+```{r}
+
+table4 = clean_names(read.csv("./data/Quality.csv"))
+
+t.test(table4$sample_1, 12, conf.level = 0.99)
+
+```
+
+b. compute the standard deviation for each of the four samples. does the assumption of .21 for the population standard deviation appear reasonable?
+```{r}
+
+table4 = clean_names(read.csv("./data/Quality.csv"))
+
+t.test(table4$sample_1, 12, conf.level = 0.99)
+
+```
+
+c. compute limits for the sample mean around such that, as long as a new sample mean is within those limits, the process will be considered to be operating satisfactorily. if exceeds the upper limit or if is below the lower limit, corrective action will be taken. these limits are referred to as upper and lower control limits for quality control purposes.
+```{r}
+
+table4 = clean_names(read.csv("./data/Quality.csv"))
+
+t.test(table4$sample_1, 12, conf.level = 0.99)
+
+```
+
+d. discuss the implications of changing the level of significance to a larger value. what mistake or error could increase if the level of significance is increased?
+
+
+## Question #6: Vacation occupancy rates were expected to be up during March 2008 in Myrtle Beach, South Carolina (the sun news, February 29, 2008). Data in the file Occupancy (Attached file Occupancy) will allow you to replicate the findings presented in the newspaper. The data show units rented and not rented for a random sample of vacation properties during the first week of March 2007 and March 2008.
+
+a. Estimate the proportion of units rented during the first week of March 2007 and the first week of March 2008.
+```{r}
+
+table5 = clean_names(read.csv("./data/Occupancy", skip = 1))
+
+nrow(table5 %>% filter(march_2007 == 'Yes')) / nrow(table5)
+nrow(table5 %>% filter(march_2008 == 'Yes')) / nrow(table5 %>% filter(march_2008 != ''))
+
+```
+
+b. Provide a 95% confidence interval for the difference in proportions.
+```{r}
+#march2027总量
+n_2027 = nrow(table5)
+
+#march2027为YES的量
+x_2027 = nrow(table5 %>% filter(march_2007 == 'Yes'))
+
+#march2028总量
+n_2028 = nrow(table5 %>% filter(march_2008 != ''))
+
+#march2027为YES的量
+x_2028 = nrow(table5 %>% filter(march_2007 == 'Yes'))
+
+prop.test(x_2027, n_2027, conf.level = 0.95)$conf.int[1]
+prop.test(x_2027, n_2027, conf.level = 0.95)$conf.int[2]
+
+prop.test(x_2028, n_2028, conf.level = 0.95)$conf.int[1]
+prop.test(x_2028, n_2028, conf.level = 0.95)$conf.int[2]
+
+```
+
+c. On the basis of your findings, does it appear March rental rates for 2008 will be up from those a year earlier?
+不会
+
+
+## Question #7: Air Force Training Program (data file: Training)
+
+An air force introductory course in electronics uses a personalized system of instruction whereby each student views a videotaped lecture and then is given a programmed instruc-tion text. the students work independently with the text until they have completed the training and passed a test. Of concern is the varying pace at which the students complete this portion of their training program. Some students are able to cover the programmed instruction text relatively quickly, whereas other students work much longer with the text and require additional time to complete the course. The fast students wait until the slow students complete the introductory course before the entire group proceeds together with other aspects of their training.
+
+A proposed alternative system involves use of computer-assisted instruction. In this method, all students view the same videotaped lecture and then each is assigned to a computer terminal for further instruction. The computer guides the student, working independently, through the self-training portion of the course.
+
+To compare the proposed and current methods of instruction, an entering class of 122 students was assigned randomly to one of the two methods. one group of 61 students used the current programmed-text method and the other group of 61 students used the proposed computer-assisted method. The time in hours was recorded for each student in the study. Data are provided in the data set training (see Attached file).
+
+Managerial Report
+
+a. use appropriate descriptive statistics to summarize the training time data for each method. what similarities or differences do you observe from the sample data?
+```{r}
+
+table5 = clean_names(read.csv("./data/Occupancy", skip = 1))
+
+nrow(table5 %>% filter(march_2007 == 'Yes')) / nrow(table5)
+nrow(table5 %>% filter(march_2008 == 'Yes')) / nrow(table5 %>% filter(march_2008 != ''))
+
+```
+
+b. Comment on any difference between the population means for the two methods. Discuss your findings.
+
+c. compute the standard deviation and variance for each training method. conduct a hypothesis test about the equality of population variances for the two training methods. Discuss your findings.
+
+d. what conclusion can you reach about any differences between the two methods? what is your recommendation? explain.
+
+e. can you suggest other data or testing that might be desirable before making a final decision on the training program to be used in the future?
