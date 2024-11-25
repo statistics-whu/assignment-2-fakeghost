@@ -305,37 +305,96 @@ Managerial Report
 a. use appropriate descriptive statistics to summarize the training time data for each method. what similarities or differences do you observe from the sample data?
 ```{r}
 
-table5 = clean_names(read.csv("./data/Occupancy", skip = 1))
+table6 = read.csv("./data/Training.csv")
 
-nrow(table6 %>% filter(march_2007 == 'Yes')) / nrow(table5)
-nrow(table6 %>% filter(march_2008 == 'Yes')) / nrow(table5 %>% filter(march_2008 != ''))
+skimr::skim(table6) %>% kable() %>% kable_styling()
 
 ```
 
+
 b. Comment on any difference between the population means for the two methods. Discuss your findings.
+```{r}
+
+t.test(table6$Current, table6$Proposed)
+
+```
+
+pValue为0.54，2组数据没有证据证明其有显著差异
 
 c. compute the standard deviation and variance for each training method. conduct a hypothesis test about the equality of population variances for the two training methods. Discuss your findings.
 
+```{r}
+
+var(table6$Current)
+var(table6$Proposed)
+
+```
+
+标准差: 3.944907 2.506385
+方差: 15.5623 6.281967
+
+
 d. what conclusion can you reach about any differences between the two methods? what is your recommendation? explain.
 
+我认为计算机辅助这种是比较好的，可以看到其方差较小，分布很集中，说明其效率对于大多数同学是比较有效的
+
 e. can you suggest other data or testing that might be desirable before making a final decision on the training program to be used in the future?
+
+我认为需要再计入学生的年龄，性别，学习时间段等，这些变量也是能够影响最终结果的变量
 
 
 ## Question #8: The Toyota Camry is one of the best-selling cars in North America. The cost of a previously owned Camry depends upon many factors, including the model year, mileage, and condition. To investigate the relationship between the car’s mileage and the sales price for a 2007 model year Camry, Attached data file Camry show the mileage and sale price for 19 sales (Pricehub website, February 24, 2012).
 
 a. Develop a scatter diagram with the car mileage on the horizontal axis and the price on the vertical axis.
 
+```{r}
+
+table7 = clean_names(read.csv("./data/Training.csv"))
+
+ggplot(data = table7, aes(x = miles_1000s, y = price_1000s)) + geom_point()
+
+```
+
 b. what does the scatter diagram developed in part (a) indicate about the relationship between the two variables?
+
+汽车行驶的里程越多的话，价格就卖的越少
 
 c. Develop the estimated regression equation that could be used to predict the price ($1000s) given the miles (1000s).
 
+```{r}
+
+modelCar = lm(price_1000s ~ miles_1000s, data = table7)
+
+library(car)
+
+summary(modelCar)
+
+(16.47 - 1) / 0.059
+
+```
+
+结果大概是262
+
 d. Test for a significant relationship at the .05 level of significance.
+
+0.0003475 < 0.5, 所以该数据是可信的
+
 
 e. Did the estimated regression equation provide a good fit? Explain.
 
+大概是0.5387的拟合，个人感觉是一个算好的拟合
+
+
 f. Provide an interpretation for the slope of the estimated regression equation.
 
+斜率为0.59，每开1000miles，价格就会下降59美刀
+
+
 g. Suppose that you are considering purchasing a previously owned 2007 Camry that has been driven 60,000 miles. Using the estimated regression equation developed in part (c), predict the price for this car. Is this the price you would offer the seller.
+
+(16.47 - 60 * 0.059) * 1000
+
+大概是12930美刀的价格
 
 
 ## Question #9: 附件WE.xlsx是某提供网站服务的Internet服务商的客户数据。数据包含了6347名客户在11个指标上的表现。其中”流失“指标中0表示流失，”1“表示不流失，其他指标含义看变量命名。
@@ -344,12 +403,47 @@ a. 通过可视化探索流失客户与非流失客户的行为特点（或特�
 
 ```{r}
 
-table8 = read_xlsx("./data/WE.xlsx")
+table8 = clean_names(read_xlsx("./data/WE.xlsx"))
+
+numeric_columns = names(table8)[sapply(table8, is.numeric) & names(table8) != "liu_shi" & names(table8) != "ke_hu_id"]
+
+t_test_summary = sapply(numeric_columns, function(col) {
+  formula <- as.formula(paste(col, "~ liu_shi"))
+  test <- t.test(formula, data = table8)
+  c(t_value = test$statistic, p_value = test$p.value, mean_group1 = test$estimate[1], mean_group2 = test$estimate[2])
+})
+
+t_test_summary = as.data.frame(t(t_test_summary))
+
+# 致信区间
+# t.test(dang_yue_deng_lu_ci_shu ~ liu_shi, data = table8)$conf.int[1]
+
+# 自由度
+# t.test(dang_yue_deng_lu_ci_shu ~ liu_shi, data = table8)$parameter
+
+# p值
+# t.test(dang_yue_deng_lu_ci_shu ~ liu_shi, data = table8)$p.value
+
+# 均值
+# as.numeric(t.test(dang_yue_deng_lu_ci_shu ~ liu_shi, data = table8)$estimate["mean in group 0"])
 
 ```
 
+通过一系列比较发现几乎所有的变量，都存在显著的差异，除了"服务优先级相比上月的变化"，"客户支持相比上月的变化" 2个参数
+
 b. 通过均值比较的方式验证上述不同是否显著。
+
+第一问已经验证完毕
 
 c. 以”流失“为因变量，其他你认为重要的变量为自变量（提示：a、b两步的发现），建立回归方程对是否流失进行预测。
 
+```{r}
+
+modelUse = lm(liu_shi ~ dang_yue_ke_hu_xing_fu_zhi_shu + ke_hu_xing_fu_zhi_shu_xiang_bi_shang_yue_bian_hua + dang_yue_ke_hu_zhi_chi + dang_yue_fu_wu_you_xian_ji + dang_yue_deng_lu_ci_shu + bo_ke_shu_xiang_bi_shang_yue_de_bian_hua + fang_wen_ci_shu_xiang_bi_shang_yue_de_zeng_jia + ke_hu_shi_yong_qi_xian + fang_wen_jian_ge_bian_hua, data = table8)
+
+vif(modelUse)
+
+```
+
 d. 根据上一步预测的结果，对尚未流失（流失=0）的客户进行流失可能性排序，并给出流失可能性最大的前100名用户ID列表。
+不会
