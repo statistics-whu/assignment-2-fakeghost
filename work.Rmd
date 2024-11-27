@@ -229,25 +229,56 @@ a. Conduct a hypothesis test for each sample at the .01 level of significance an
 
 table4 = clean_names(read.csv("./data/Quality.csv"))
 
-t.test(table4$sample_1, 12, conf.level = 0.99)
+avg1 = mean(table4$sample_1)
+avg2 = mean(table4$sample_2)
+avg3 = mean(table4$sample_3)
+avg4 = mean(table4$sample_4)
+
+u = 12;
+s = 0.21
+n = nrow(table4)
+
+tValue1 = (avg1 - u) / (s / sqrt(n))
+pValue1 = if(tValue1 > 0) 2 * (1 - pnorm(tValue1)) else 2 * pnorm(tValue1)
+
+tValue2 = (avg2 - u) / (s / sqrt(n))
+pValue2 = if(tValue2 > 0) 2 * (1 - pnorm(tValue2)) else 2 * pnorm(tValue2)
+
+tValue3 = (avg3 - u) / (s / sqrt(n))
+pValue3 = if(tValue3 > 0) 2 * (1 - pnorm(tValue3)) else 2 * pnorm(tValue3)
+
+tValue4 = (avg4 - u) / (s / sqrt(n))
+pValue4 = if(tValue4 > 0) 2 * (1 - pnorm(tValue4)) else 2 * pnorm(tValue4)
 
 ```
 
 b. compute the standard deviation for each of the four samples. does the assumption of .21 for the population standard deviation appear reasonable?
+
 ```{r}
 
-table4 = clean_names(read.csv("./data/Quality.csv"))
 
-t.test(table4$sample_1, 12, conf.level = 0.99)
+sd(table4$sample_1)
+sd(table4$sample_2)
+sd(table4$sample_3)
+sd(table4$sample_4)
 
 ```
+合理
+
 
 c. compute limits for the sample mean around such that, as long as a new sample mean is within those limits, the process will be considered to be operating satisfactorily. if exceeds the upper limit or if is below the lower limit, corrective action will be taken. these limits are referred to as upper and lower control limits for quality control purposes.
+
 ```{r}
 
-table4 = clean_names(read.csv("./data/Quality.csv"))
+z_interval <- function(x_bar, sigma, conf_level = 0.95, n) {
+  z_star <- qnorm(1 - (1 - conf_level) / 2)  # 计算临界值
+  margin_error <- z_star * (sigma / sqrt(n)) # 计算误差范围
+  lower <- x_bar - margin_error              # 下限
+  upper <- x_bar + margin_error              # 上限
+  return(c(lower, upper))                    # 返回置信区间
+}
 
-t.test(table4$sample_1, 12, conf.level = 0.99)
+z_interval(12, 0.21, 0.01, 30)
 
 ```
 
@@ -259,7 +290,7 @@ d. discuss the implications of changing the level of significance to a larger va
 a. Estimate the proportion of units rented during the first week of March 2007 and the first week of March 2008.
 ```{r}
 
-table5 = clean_names(read.csv("./data/Occupancy", skip = 1))
+table5 = clean_names(read.csv("./data/Occupancy.csv", skip = 1))
 
 nrow(table5 %>% filter(march_2007 == 'Yes')) / nrow(table5)
 nrow(table5 %>% filter(march_2008 == 'Yes')) / nrow(table5 %>% filter(march_2008 != ''))
@@ -349,7 +380,7 @@ a. Develop a scatter diagram with the car mileage on the horizontal axis and the
 
 ```{r}
 
-table7 = clean_names(read.csv("./data/Training.csv"))
+table7 = clean_names(read.csv("./data/Camry.csv"))
 
 ggplot(data = table7, aes(x = miles_1000s, y = price_1000s)) + geom_point()
 
