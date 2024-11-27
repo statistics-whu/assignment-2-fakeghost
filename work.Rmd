@@ -12,7 +12,7 @@ header-includes:
 The Big Bang Theory, a situation comedy featuring Johnny Galecki, Jim Parsons, and Kaley Cuoco-Sweeting, is one of the most-watched programs on network television. The first two episodes for the 2011–2012 season premiered on September 22, 2011; the first episode attracted 14.1 million viewers and the second episode attracted 14.7 million viewers. The attached data file BigBangTheory shows the number of viewers in millions for the first 21 episodes of the 2011–2012 season (the Big Bang theory website, April 17, 2012).
 
 a. Compute the minimum and the maximum number of viewers.
-
+ 
 ```{r}
 library(tidyverse)
 library(readxl)
@@ -50,8 +50,12 @@ quantile(table1$viewers_millions, probs = c(0.25, 0.75))
 ```
 
 d. has viewership grown or declined over the 2011–2012 season? Discuss.
+```{r}
 
-不会
+ggplot(table1, aes(x = air_date, y = viewers_millions)) + geom_point()
+
+```
+第二季开始的时候很好看，后续应该是质量下滑导致收视率下降
 
 ## Question #2: NBAPlayerPts. (Attached Data: NBAPlayerPts)
 
