@@ -105,8 +105,13 @@ ggplot(table2, aes(x = PPG)) + geom_histogram(binwidth = 2, fill = "lightblue", 
 ```
 
 e. Do the data appear to be skewed? Explain.
+```{r}
+library("moments")
+skewness(table2$PPG)
+median(table2$PPG)
+```
 
-是的，可以发现频率分布直方图左偏，在累计分布的时候可以发现在[14, 16), (16, 18)这个区间是快速上升的，数据分布不均匀的
+是的，可以发现频率分布直方图右偏，在累计分布的时候可以发现在[14, 16), (16, 18)这个区间是快速上升的，数据分布不均匀的
 
 f. What percentage of the players averaged at least 20 points per game?
 ```{r}
@@ -210,13 +215,23 @@ result_children$conf.int[2]
 
 d. Would Young Professional be a good advertising outlet for online brokers? Justify your conclusion with statistical data.
 
-不会
+```{r}
+# 计算致信区间
+nrow(table3 %>% filter(broadband_access == 'Yes')) / nrow(table3)
+```
+大概有62%的人接入了互联网，所以是一个上网的良好的渠道
+
 
 e. Would this magazine be a good place to advertise for companies selling educational software and computer games for young children?
-不会
+```{r}
+# 计算百分比
+nrow(table3 %>% filter(broadband_access == 'Yes')) / nrow(table3)
+```
+大概有53%的人有孩子，所以感觉也是个非常好的渠道
 
 f. Comment on the types of articles you believe would be of interest to readers of Young Professional.
-不会
+我个人认为应该是对金融投资或者电子游戏类的杂志感兴趣
+
 
 ## Question #5: Quality Associate, Inc. (Attached Data: Quality)
 
